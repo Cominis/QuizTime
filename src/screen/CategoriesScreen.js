@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { View, ScrollView, ActivityIndicator, Button, StyleSheet } from "react-native";
+import {
+    View,
+    ScrollView,
+    ActivityIndicator,
+    Pressable,
+    Text,
+    StyleSheet,
+    Dimensions
+} from "react-native";
 import { requestCategories, requestToken } from '../api/api';
 
 const CategoriesScreen = (props) => {
@@ -28,23 +36,31 @@ const CategoriesScreen = (props) => {
     const renderCategories = () => {
         const { trivia_categories = [] } = categories;
         return trivia_categories.map(el => (
-            <Button
+            <Pressable
                 key={el["id"]}
-                title={el["name"]}
-                style={_styles.button}
+                style={_styles.category}
                 onPress={() => toQuizHandler(el["id"])}
-            />
+                android_ripple={{
+                    borderless: false,
+                    radius: 30
+                }}
+            >
+                <Text style={_styles.categoryText}>
+                    {el["name"]}
+                </Text>
+            </Pressable>
         ))
     }
     return (
-        <View style={_styles.container}>
-            <ScrollView>
-                {isLoading
-                    ? <ActivityIndicator size="large" color="#00ff00" />
-                    : null}
-                {renderCategories()}
-            </ScrollView>
-        </View>
+        <ScrollView style={_styles.container} contentContainerStyle={_styles.scrollContainer}>
+            {isLoading && (<ActivityIndicator
+                animating={isLoading}
+                hidesWhenStopped
+                size="large"
+                color="#00ff00"
+            />)}
+            {renderCategories()}
+        </ScrollView>
     );
 }
 
@@ -56,12 +72,17 @@ CategoriesScreen.propTypes = {
 
 const _styles = StyleSheet.create({
     container: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-around',
-        alignItems: 'center'
+        minHeight: 100
     },
-    button: {
-        padding: '50px'
+    scrollContainer: {
+        flexGrow: 1,
+        justifyContent: "center",
+        alignItems: 'stretch'
+    },
+    category: {
+        margin: 12
+    },
+    categoryText: {
+        fontSize: 20
     }
 });

@@ -32,10 +32,10 @@ const QuizScreen = (props) => {
         return Object.keys(results).map(key => (
             <Pressable
                 key={key}
-                style={_styles.button}
+                style={_styles.question}
                 onPress={() => toQuestionHandler(results[key])}
             >
-                <Text>
+                <Text style={_styles.text}>
                     {parseInt(key) + 1}{') '}
                     {trunc(decodeURIComponent(results[key].question), 30)}
                 </Text>
@@ -43,14 +43,16 @@ const QuizScreen = (props) => {
         ))
     }
     return (
-        <View style={_styles.container}>
-            <ScrollView contentContainerStyle={_styles.scrollContainer}>
-                {isLoading
-                    ? <ActivityIndicator size="large" color="#00ff00" />
-                    : null}
-                {renderQuestions()}
-            </ScrollView>
-        </View>
+        <ScrollView
+            style={_styles.container}
+            contentContainerStyle={_styles.scrollContainer}>
+            {isLoading &&
+                (<ActivityIndicator
+                    size="large"
+                    color="#00ff00"
+                />)}
+            {renderQuestions()}
+        </ScrollView>
     );
 }
 
@@ -62,22 +64,21 @@ QuizScreen.propTypes = {
 
 const _styles = StyleSheet.create({
     container: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-around',
-        alignItems: 'center'
+        minHeight: 100
     },
     scrollContainer: {
-        flex: 1,
+        flexGrow: 1,
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'stretch'
     },
-    button: {
-        backgroundColor: '#aaa',
+    question: {
         margin: 6,
         padding: 12,
         paddingStart: 20,
         paddingEnd: 20
+    },
+    text: {
+        fontSize: 20
     }
 });
