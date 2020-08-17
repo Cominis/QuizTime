@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-
+import SplashScreen from 'react-native-splash-screen'
+import { Platform } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -36,9 +37,9 @@ const AppNavigator = () => {
 
 const App = () => {
 
-  // useEffect(() => {
-  //   SplashScreen.hide();
-  // }, []);
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
 
   return (
     <NavigationContainer>

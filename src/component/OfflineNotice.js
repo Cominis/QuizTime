@@ -49,7 +49,6 @@ const styles = StyleSheet.create({
     },
     offlineText: {
         color: "#fff",
-        marginBottom: 16,
         fontFamily: "Montserrat-Regular",
     },
 });
