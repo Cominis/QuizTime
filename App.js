@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-//import SplashScreen from "react-native-splash-screen";
+
 import OfflineNotice from './src/component/OfflineNotice';
 import HomeScreen from './src/screen/HomeScreen';
 import HistoryScreen from './src/screen/HistoryScreen';
@@ -10,7 +10,6 @@ import QuestionScreen from './src/screen/QuestionScreen';
 import ResultsScreen from './src/screen/ResultsScreen';
 import CategoriesScreen from './src/screen/CategoriesScreen';
 import QuizScreen from './src/screen/QuizScreen';
-
 
 const Stack = createStackNavigator();
 

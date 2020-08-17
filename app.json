@@ -1,12 +1,4 @@
 {
   "name": "QuizTime",
-  "displayName": "QuizTime",
-  "expo": {
-    "name": "QuizTime",
-    "slug": "QuizTime",
-    "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ]
-  }
+  "displayName": "QuizTime"
 }
