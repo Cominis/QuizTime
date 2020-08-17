@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { View, ScrollView, ActivityIndicator, Button, StyleSheet } from "react-native";
+import { View, ScrollView, ActivityIndicator, Pressable, Text, StyleSheet } from "react-native";
 import { requestQuestionsFromCategory } from '../api/api';
+import trunc from '../helper/Truncate';
 
 const QuizScreen = (props) => {
     const [questions, setQuestions] = useState({});
@@ -29,17 +30,21 @@ const QuizScreen = (props) => {
     const renderQuestions = () => {
         const { results = [] } = questions;
         return Object.keys(results).map(key => (
-            <Button
+            <Pressable
                 key={key}
-                title={decodeURIComponent(results[key].question)}
                 style={_styles.button}
                 onPress={() => toQuestionHandler(results[key])}
-            />
+            >
+                <Text>
+                    {parseInt(key) + 1}{') '}
+                    {trunc(decodeURIComponent(results[key].question), 30)}
+                </Text>
+            </Pressable>
         ))
     }
     return (
         <View style={_styles.container}>
-            <ScrollView>
+            <ScrollView contentContainerStyle={_styles.scrollContainer}>
                 {isLoading
                     ? <ActivityIndicator size="large" color="#00ff00" />
                     : null}
@@ -62,7 +67,17 @@ const _styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center'
     },
+    scrollContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'stretch'
+    },
     button: {
-        padding: '50px'
+        backgroundColor: '#aaa',
+        margin: 6,
+        padding: 12,
+        paddingStart: 20,
+        paddingEnd: 20
     }
 });
