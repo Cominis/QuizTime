@@ -3,6 +3,10 @@ import SplashScreen from 'react-native-splash-screen'
 import { Platform, Button, Pressable, StyleSheet } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator, HeaderBackButton } from "@react-navigation/stack";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import getHeaderTitle from './src/helper/GetHeaderTitle';
+import NetworkContext from './src/component/QuizContext';
+
 
 import OfflineNotice from './src/component/OfflineNotice';
 import HomeScreen from './src/screen/HomeScreen';
@@ -13,10 +17,81 @@ import CategoriesScreen from './src/screen/CategoriesScreen';
 import QuizScreen from './src/screen/QuizScreen';
 import SettingsScreen from './src/screen/SettingsScreen';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import CommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+
+
+const QuizTab = createBottomTabNavigator();
+const QuizNavigator = ({ route }) => {
+  return (
+    <NetworkContext.Provider value={route.params}>
+      <QuizTab.Navigator>
+        <QuizTab.Screen
+          name="Quiz"
+          component={QuizScreen}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName = focused
+                ? 'account-question'
+                : 'account-question-outline';
+              return <CommunityIcon name={iconName} size={size} color={color} />;
+            },
+          }}
+        />
+        <QuizTab.Screen
+          name="Results"
+          component={ResultsScreen}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName = focused
+                ? 'folder-information'
+                : 'folder-information-outline';
+              return <CommunityIcon name={iconName} size={size} color={color} />;
+            },
+          }}
+        />
+      </QuizTab.Navigator>
+    </NetworkContext.Provider>
+  );
+}
+
+const HomeTab = createBottomTabNavigator();
+const HomeNavigator = () => {
+  return (
+    <HomeTab.Navigator
+      screenOptions={{
+        headerShown: true,
+      }}
+    // tabBarOptions={{
+    //   activeTintColor: 'tomato',
+    //   inactiveTintColor: 'gray',
+    // }}
+    >
+      <HomeTab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName = focused
+              ? 'home'
+              : 'home-outline';
+            return <CommunityIcon name={iconName} size={size} color={color} />;
+          },
+        }} />
+      <HomeTab.Screen
+        name="History"
+        component={HistoryScreen}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => {
+            return <CommunityIcon name='history' size={size} color={color} />;
+          },
+        }} />
+    </HomeTab.Navigator>
+  );
+}
 
 const Stack = createStackNavigator();
-
-const AppNavigator = () => {
+const StackNavigator = () => {
   return (
     <Stack.Navigator
       initialRouteName="Home"
@@ -36,16 +111,22 @@ const AppNavigator = () => {
         )
       })}
     >
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen
+        name="HomeNavigator"
+        component={HomeNavigator}
+        options={({ route }) => ({
+          headerTitle: getHeaderTitle(route, 'Home'),
+        })}
+      />
       <Stack.Screen name="Categories" component={CategoriesScreen} />
       <Stack.Screen
-        name="Quiz"
-        component={QuizScreen}
-        initialParams={{ answeredQuestions: new Array(15).fill(null) }}
+        name="QuizNavigator"
+        component={QuizNavigator}
+        options={({ route }) => ({
+          headerTitle: getHeaderTitle(route, 'Quiz'),
+        })}
       />
       <Stack.Screen name="Question" component={QuestionScreen} />
-      <Stack.Screen name="Results" component={ResultsScreen} />
-      <Stack.Screen name="History" component={HistoryScreen} />
       <Stack.Screen
         name="Settings"
         component={SettingsScreen}
@@ -63,7 +144,7 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <AppNavigator />
+      <StackNavigator />
       <OfflineNotice />
     </NavigationContainer>
   );

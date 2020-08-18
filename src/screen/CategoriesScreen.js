@@ -6,8 +6,7 @@ import {
     ActivityIndicator,
     Pressable,
     Text,
-    StyleSheet,
-    Dimensions
+    StyleSheet
 } from "react-native";
 import { requestCategories, requestToken } from '../api/api';
 import { getData } from '../helper/Storage';
@@ -34,8 +33,15 @@ const CategoriesScreen = (props) => {
 
 
     const toQuizHandler = (id) => {
-        console.log(`${settings.amount}`);
-        props.navigation.navigate('Quiz', { token: token, categoryId: id, settings: settings, answeredQuestions: new Array(settings.amount).fill(null) });
+        props.navigation.navigate('QuizNavigator', {
+            screen: 'Quiz',
+            params: {
+                token: token,
+                categoryId: id,
+                settings: settings,
+                answeredQuestions: new Array(settings.amount).fill(null)
+            },
+        });
     }
 
     const renderCategories = () => {
@@ -58,13 +64,13 @@ const CategoriesScreen = (props) => {
     }
     return (
         <ScrollView style={_styles.container} contentContainerStyle={_styles.scrollContainer}>
-            {isLoading && (<ActivityIndicator
-                animating={isLoading}
-                hidesWhenStopped
-                size="large"
-                color="#00ff00"
-            />)}
-            {renderCategories()}
+            {isLoading ?
+                (<ActivityIndicator
+                    animating={isLoading}
+                    hidesWhenStopped
+                    size="large"
+                    color="#00ff00"
+                />) : renderCategories()}
         </ScrollView>
     );
 }

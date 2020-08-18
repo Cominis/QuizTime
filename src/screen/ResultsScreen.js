@@ -1,18 +1,25 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { View, StyleSheet, Text } from "react-native";
+import QuizContext from '../component/QuizContext';
 
-const ResultsScreen = ({ navigation, route }) => {
-    const { amount, answeredQuestions } = route.params;
-    const results = [];
-    for (let i = 0; i < amount; i++) {
-        results.push();
-    }
+
+const ResultsScreen = () => {
+
+    const context = useContext(QuizContext);
+    const { settings, answeredQuestions } = context.params;
+    const { amount } = settings;
+    const correctArray = answeredQuestions.filter((el) => el === true);
+    const incorrectArray = answeredQuestions.filter((el) => el === false);
+    const unaswered = amount - correctArray.length - incorrectArray.length;
+
+    console.log(JSON.stringify(context));
+
     return (
         <View style={_styles.container}>
-            {answeredQuestions.map((el, index) => {
-                return <Text key={index}>value: {`${el}`}</Text>
-            })}
+            <Text>Correct: {correctArray.length}</Text>
+            <Text>Incorrect: {incorrectArray.length}</Text>
+            <Text>Unanswered: {unaswered}</Text>
         </View>
     );
 }

@@ -78,12 +78,12 @@ const QuizScreen = (props) => {
         <ScrollView
             style={_styles.container}
             contentContainerStyle={_styles.scrollContainer}>
-            {isLoading &&
+            {isLoading ?
                 (<ActivityIndicator
                     size="large"
                     color="#00ff00"
-                />)}
-            {renderQuestions()}
+                />)
+                : renderQuestions()}
         </ScrollView>
     );
 }
