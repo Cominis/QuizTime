@@ -1,20 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { View, ScrollView, ActivityIndicator, Pressable, Text, StyleSheet } from "react-native";
-import { requestQuestionsFromCategory } from '../api/api';
+import { requestQuestionsFromCategory, requestTokenReset } from '../api/api';
 import trunc from '../helper/Truncate';
 
 const QuizScreen = (props) => {
-    const { token, categoryId, answeredQuestions } = props.route.params;
+    const { token, categoryId, answeredQuestions, settings } = props.route.params;
+
     const [questions, setQuestions] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const getQuestions = async () => {
         setIsLoading(true);
-        const result = await requestQuestionsFromCategory(
+        let json = await requestQuestionsFromCategory(
             token,
-            categoryId
+            categoryId,
+            settings.amount,
+            settings.difficulty
         );
-        if (result) setQuestions(result);
+
+        switch (json['response_code']) {
+            case (0):
+                setQuestions(json);
+                break;
+            case (1):
+            case (2):
+            case (3):
+                alert('Someting went wrong!');
+                break;
+            case (4):
+                json = await requestTokenReset(token)
+                if (json['response_code'] === 0)
+                    json = await requestQuestionsFromCategory(
+                        token,
+                        categoryId,
+                        settings.amount
+                    );
+                setQuestions(json);
+                break;
+            default:
+
+        }
         setIsLoading(false);
     }
 
@@ -22,12 +47,13 @@ const QuizScreen = (props) => {
         getQuestions()
     }, [])
 
-
-    const toQuestionHandler = (questions, answeredQuestions, currentQuestion) => {
+    const toQuestionHandler = (questions, answeredQuestions, currentQuestion, amount) => {
+        console.log(`in quiz: ${amount}`);
         props.navigation.navigate('Question', {
             questions: questions,
             answeredQuestions: answeredQuestions,
-            currentQuestion: currentQuestion
+            currentQuestion: currentQuestion,
+            amount: amount
         });
     }
 
@@ -36,8 +62,8 @@ const QuizScreen = (props) => {
         return Object.keys(results).map(key => (
             <Pressable
                 key={key}
-                style={answeredQuestions[key] ? _styles.viewedQuestion : _styles.normalQuestion}
-                onPress={() => toQuestionHandler(results, answeredQuestions, parseInt(key))}
+                style={answeredQuestions[key] !== null ? _styles.viewedQuestion : _styles.normalQuestion}
+                onPress={() => toQuestionHandler(results, answeredQuestions, parseInt(key), settings.amount)}
             >
                 <Text style={_styles.numberText}>
                     {parseInt(key) + 1}

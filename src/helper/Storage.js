@@ -15,6 +15,24 @@ export const getData = async (key) => {
         const jsonValue = await AsyncStorage.getItem(key)
         return jsonValue != null ? JSON.parse(jsonValue) : null;
     } catch (e) {
-        return undefined;
+        return null;
+    }
+}
+
+export const storeString = async (key, value) => {
+    try {
+        await AsyncStorage.setItem(key, value)
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+export const getString = async (key) => {
+    try {
+        const value = await AsyncStorage.getItem(key)
+        return value !== null ? value : null;
+    } catch (e) {
+        return null;
     }
 }

@@ -10,27 +10,32 @@ import {
     Dimensions
 } from "react-native";
 import { requestCategories, requestToken } from '../api/api';
+import { getData } from '../helper/Storage';
+
 
 const CategoriesScreen = (props) => {
-    const [categories, setCategories] = useState({})
-    const [token, setToken] = useState('')
-    const [isLoading, setIsLoading] = useState(false)
-
+    const [categories, setCategories] = useState({});
+    const [token, setToken] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [settings, setSettings] = useState({});
     const getInfo = async () => {
-        setIsLoading(true)
+        setIsLoading(true);
         const [result, tokenInfo] = await Promise.all([requestCategories(), requestToken()]);
         if (result) setCategories(result);
-        if (tokenInfo) setToken(tokenInfo.token)
+        if (tokenInfo) setToken(tokenInfo.token);
+        const settings = (await getData('settings')) || { amount: 10, difficulty: 'any' }
+        setSettings(settings);
         setIsLoading(false)
     }
 
     useEffect(() => {
-        getInfo()
+        getInfo();
     }, [])
 
 
     const toQuizHandler = (id) => {
-        props.navigation.navigate('Quiz', { token: token, categoryId: id, answeredQuestions: new Array(10).fill(false) });
+        console.log(`${settings.amount}`);
+        props.navigation.navigate('Quiz', { token: token, categoryId: id, settings: settings, answeredQuestions: new Array(settings.amount).fill(null) });
     }
 
     const renderCategories = () => {

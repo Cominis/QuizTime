@@ -47,11 +47,13 @@ export const requestCategoryCount = async (category) => {
     return await request(getCategoryCountUrl(category));
 }
 
-export const requestRandomQuestions = async (token, amount = 10) => {
-    return await request(getRandomQuestionsUrl(token, amount));
+export const requestRandomQuestions = async (token, amount = 10, difficulty = 'any') => {
+    const url = getRandomQuestionsUrl(token, amount, difficulty);
+    return await request(url);
 }
 
-export const requestQuestionsFromCategory = async (token, category, amount = 10) => {
-    return await request(getQuestionsFromCategoryUrl(token, category, amount));
+export const requestQuestionsFromCategory = async (token, category, amount = 10, difficulty = 'any') => {
+    const url = getQuestionsFromCategoryUrl(token, category, amount, difficulty);
+    return await request(url);
 }
 

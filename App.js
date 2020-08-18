@@ -41,7 +41,7 @@ const AppNavigator = () => {
       <Stack.Screen
         name="Quiz"
         component={QuizScreen}
-        initialParams={{ answeredQuestions: new Array(10).fill(false) }}
+        initialParams={{ answeredQuestions: new Array(15).fill(null) }}
       />
       <Stack.Screen name="Question" component={QuestionScreen} />
       <Stack.Screen name="Results" component={ResultsScreen} />

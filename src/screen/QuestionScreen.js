@@ -19,7 +19,8 @@ const QuestionScreen = ({ navigation, route }) => {
     const {
         questions,
         answeredQuestions,
-        currentQuestion } = route.params;
+        currentQuestion,
+        amount } = route.params;
 
     const [isAnswered, setIsAnswered] = useState(answeredQuestions[currentQuestion])
     const [answers, setAnswers] = useState([])
@@ -29,32 +30,33 @@ const QuestionScreen = ({ navigation, route }) => {
             ({
                 key: key,
                 title: decodeURIComponent(questions[currentQuestion].incorrect_answers[key]),
-                onPress: onAnsweredHandler
+                onPress: () => { onAnsweredHandler(false) }
             })
         );
         answers.push({
             key: 3,
             title: decodeURIComponent(questions[currentQuestion].correct_answer),
-            onPress: onAnsweredHandler
+            onPress: () => { onAnsweredHandler(true) }
         });
         shuffle(answers);
         setAnswers(answers);
     }, [])
 
-    const onAnsweredHandler = () => {
-        setIsAnswered(true)
-        answeredQuestions.splice(currentQuestion, 0, true);
+    const onAnsweredHandler = (answer) => {
+        setIsAnswered(true);
+        answeredQuestions[currentQuestion] = answer;
     }
 
     const onNextHandler = () => {
-        if (currentQuestion === 9) {
-            navigation.push('Results')
+        if (currentQuestion >= amount - 1) {
+            navigation.navigate('Results', { amount: amount, answeredQuestions: answeredQuestions });
         } else {
             navigation.push('Question', {
                 questions: questions,
                 answeredQuestions: answeredQuestions,
-                currentQuestion: currentQuestion + 1
-            })
+                currentQuestion: currentQuestion + 1,
+                amount: amount
+            });
         }
     }
 
@@ -62,8 +64,9 @@ const QuestionScreen = ({ navigation, route }) => {
         navigation.push('Question', {
             questions: questions,
             answeredQuestions: answeredQuestions,
-            currentQuestion: currentQuestion - 1
-        })
+            currentQuestion: currentQuestion - 1,
+            amount: amount
+        });
     }
 
     return (
@@ -74,7 +77,7 @@ const QuestionScreen = ({ navigation, route }) => {
                         //todo: make swipable
                     }
                     <Button title='Previous' onPress={onPreviousHandler} disabled={currentQuestion === 0} />
-                    <Button title={currentQuestion === 9 ? 'Results' : 'Next'} onPress={onNextHandler} />
+                    <Button title={currentQuestion >= amount - 1 ? 'Results' : 'Next'} onPress={onNextHandler} />
                 </View>
                 <Text style={_styles.question}>
                     {decodeURIComponent(questions[currentQuestion].question)}
@@ -85,9 +88,9 @@ const QuestionScreen = ({ navigation, route }) => {
                     <Pressable
                         key={el.key}
                         onPress={el.onPress}
-                        disabled={isAnswered}
+                        disabled={isAnswered !== null}
                         android_ripple={{ borderless: false }}
-                        style={isAnswered ? (el.key === 3 ? _styles.correct : _styles.incorrect) : _styles.normal}>
+                        style={isAnswered !== null ? (el.key === 3 ? _styles.correct : _styles.incorrect) : _styles.normal}>
                         <Text style={_styles.answer}>
                             {el.title}
                         </Text>
