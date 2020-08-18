@@ -5,9 +5,9 @@ import { requestQuestionsFromCategory } from '../api/api';
 import trunc from '../helper/Truncate';
 
 const QuizScreen = (props) => {
+    const { token, categoryId, answeredQuestions } = props.route.params;
     const [questions, setQuestions] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-    const { token, categoryId } = props.route.params;
     const getQuestions = async () => {
         setIsLoading(true);
         const result = await requestQuestionsFromCategory(
@@ -23,8 +23,12 @@ const QuizScreen = (props) => {
     }, [])
 
 
-    const toQuestionHandler = (qna) => {
-        props.navigation.navigate('Question', { QnA: qna });
+    const toQuestionHandler = (questions, answeredQuestions, currentQuestion) => {
+        props.navigation.navigate('Question', {
+            questions: questions,
+            answeredQuestions: answeredQuestions,
+            currentQuestion: currentQuestion
+        });
     }
 
     const renderQuestions = () => {
@@ -32,12 +36,14 @@ const QuizScreen = (props) => {
         return Object.keys(results).map(key => (
             <Pressable
                 key={key}
-                style={_styles.question}
-                onPress={() => toQuestionHandler(results[key])}
+                style={answeredQuestions[key] ? _styles.viewedQuestion : _styles.normalQuestion}
+                onPress={() => toQuestionHandler(results, answeredQuestions, parseInt(key))}
             >
+                <Text style={_styles.numberText}>
+                    {parseInt(key) + 1}
+                </Text>
                 <Text style={_styles.text}>
-                    {parseInt(key) + 1}{') '}
-                    {trunc(decodeURIComponent(results[key].question), 30)}
+                    {trunc(decodeURIComponent(results[key].question), 25)}
                 </Text>
             </Pressable>
         ))
@@ -72,13 +78,30 @@ const _styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'stretch'
     },
-    question: {
-        margin: 6,
-        padding: 12,
-        paddingStart: 20,
-        paddingEnd: 20
+    normalQuestion: {
+        padding: 5,
+        paddingEnd: 20,
+        flexDirection: 'row'
+    },
+    viewedQuestion: {
+        backgroundColor: '#ccc',
+        padding: 5,
+        paddingEnd: 20,
+        flexDirection: 'row'
     },
     text: {
-        fontSize: 20
+        fontSize: 20,
+        textAlignVertical: 'center'
+    },
+    numberText: {
+        minWidth: 40,
+        color: 'black',
+        backgroundColor: '#ccc',
+        fontSize: 20,
+        textAlign: 'center',
+        textAlignVertical: 'center',
+        padding: 5,
+        marginEnd: 5,
+        borderRadius: 20
     }
 });

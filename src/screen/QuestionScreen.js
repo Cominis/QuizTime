@@ -1,28 +1,83 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import { View, Text, StyleSheet, Button, Pressable } from "react-native";
+import { HeaderBackButton } from "@react-navigation/stack";
 import shuffle from '../helper/Shuffle';
 
-const QuestionScreen = (props) => {
-    const [isAnswered, setIsAnswered] = useState(false)
+const QuestionScreen = ({ navigation, route }) => {
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerLeft: (props) => (
+                <HeaderBackButton
+                    {...props}
+                    onPress={() => { navigation.navigate('Quiz', { answeredQuestions: answeredQuestions }) }}
+                />)
+        });
+    }, [navigation]);
+
+    const {
+        questions,
+        answeredQuestions,
+        currentQuestion } = route.params;
+
+    const [isAnswered, setIsAnswered] = useState(answeredQuestions[currentQuestion])
     const [answers, setAnswers] = useState([])
 
-    const { QnA } = props.route.params;
-
     useEffect(() => {
-        const answers = Object.keys(QnA.incorrect_answers).map((key) =>
-            ({ key: key, title: decodeURIComponent(QnA.incorrect_answers[key]), onPress: () => setIsAnswered(true) })
+        const answers = Object.keys(questions[currentQuestion].incorrect_answers).map((key) =>
+            ({
+                key: key,
+                title: decodeURIComponent(questions[currentQuestion].incorrect_answers[key]),
+                onPress: onAnsweredHandler
+            })
         );
-        answers.push({ key: 3, title: decodeURIComponent(QnA.correct_answer), onPress: () => setIsAnswered(true) });
+        answers.push({
+            key: 3,
+            title: decodeURIComponent(questions[currentQuestion].correct_answer),
+            onPress: onAnsweredHandler
+        });
         shuffle(answers);
         setAnswers(answers);
     }, [])
 
+    const onAnsweredHandler = () => {
+        setIsAnswered(true)
+        answeredQuestions.splice(currentQuestion, 0, true);
+    }
+
+    const onNextHandler = () => {
+        if (currentQuestion === 9) {
+            navigation.push('Results')
+        } else {
+            navigation.push('Question', {
+                questions: questions,
+                answeredQuestions: answeredQuestions,
+                currentQuestion: currentQuestion + 1
+            })
+        }
+    }
+
+    const onPreviousHandler = () => {
+        navigation.push('Question', {
+            questions: questions,
+            answeredQuestions: answeredQuestions,
+            currentQuestion: currentQuestion - 1
+        })
+    }
+
     return (
         <View style={_styles.container}>
             <View style={_styles.questionContainer}>
+                <View style={_styles.buttonsContainer}>
+                    {
+                        //todo: make swipable
+                    }
+                    <Button title='Previous' onPress={onPreviousHandler} disabled={currentQuestion === 0} />
+                    <Button title={currentQuestion === 9 ? 'Results' : 'Next'} onPress={onNextHandler} />
+                </View>
                 <Text style={_styles.question}>
-                    {decodeURIComponent(QnA.question)}
+                    {decodeURIComponent(questions[currentQuestion].question)}
                 </Text>
             </View>
             <View style={_styles.answersContainer}>
@@ -60,7 +115,14 @@ const _styles = StyleSheet.create({
     },
     questionContainer: {
         flex: 1,
-        justifyContent: 'center'
+        justifyContent: 'center',
+        alignItems: 'flex-start'
+    },
+    buttonsContainer: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
     question: {
         margin: 12,

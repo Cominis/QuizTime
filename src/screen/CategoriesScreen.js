@@ -30,7 +30,7 @@ const CategoriesScreen = (props) => {
 
 
     const toQuizHandler = (id) => {
-        props.navigation.navigate('Quiz', { token: token, categoryId: id });
+        props.navigation.navigate('Quiz', { token: token, categoryId: id, answeredQuestions: new Array(10).fill(false) });
     }
 
     const renderCategories = () => {

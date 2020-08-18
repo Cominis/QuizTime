@@ -4,14 +4,14 @@ import { View, Image, StyleSheet, Button } from "react-native";
 import Logo from '../assets/images/dummy.png'
 const HomeScreen = (props) => {
 
-    const onPressHandler = () => {
+    const onStartHandler = () => {
         props.navigation.navigate('Categories')
     }
 
     return (
         <View style={_styles.Center}>
             <Image source={Logo} />
-            <Button title='start' onPress={onPressHandler}></Button>
+            <Button title='start' onPress={onStartHandler}></Button>
         </View>
     );
 }

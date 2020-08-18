@@ -12,6 +12,6 @@ ResultsScreen.propTypes = {
 
 };
 
-const Styles = StyleSheet.create({
+const _styles = StyleSheet.create({
 
 });
