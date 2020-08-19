@@ -8,6 +8,8 @@ import { requestCategories, requestToken } from '../api/api';
 import { getData } from '../helper/Storage';
 import Category from '../component/Category';
 import ProgressIndicator from '../component/ProgressIndicator';
+import { connect } from 'react-redux';
+import * as aCreators from '../store/actions/actions';
 
 const CategoriesScreen = (props) => {
 
@@ -35,13 +37,13 @@ const CategoriesScreen = (props) => {
     }
 
     const toQuizHandler = (id) => {
+        props.onInitAnswers(settings.amount);
         props.navigation.navigate('QuizNavigator', {
             screen: 'Quiz',
             params: {
                 token: token,
                 categoryId: id,
                 settings: settings,
-                answeredQuestions: new Array(settings.amount).fill(null),
             },
         });
     }
@@ -66,7 +68,13 @@ const CategoriesScreen = (props) => {
     );
 }
 
-export default CategoriesScreen;
+const mapDispatchToProps = dispatch => {
+    return {
+        onInitAnswers: (amount) => dispatch(aCreators.initAnswers(amount)),
+    }
+};
+
+export default connect(null, mapDispatchToProps)(CategoriesScreen);
 
 CategoriesScreen.propTypes = {
     route: PropTypes.any,

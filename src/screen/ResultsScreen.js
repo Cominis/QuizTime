@@ -1,19 +1,13 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { View, StyleSheet, Text } from "react-native";
-import QuizContext from '../component/QuizContext';
+import { connect } from 'react-redux';
 
+const ResultsScreen = (props) => {
 
-const ResultsScreen = () => {
-
-    const context = useContext(QuizContext);
-    const { settings, answeredQuestions } = context.params;
-    const { amount } = settings;
-    const correctArray = answeredQuestions.filter((el) => el === true);
-    const incorrectArray = answeredQuestions.filter((el) => el === false);
-    const unaswered = amount - correctArray.length - incorrectArray.length;
-
-    console.log(JSON.stringify(context));
+    const correctArray = props.answeredQuestions.filter((el) => el === true);
+    const incorrectArray = props.answeredQuestions.filter((el) => el === false);
+    const unaswered = props.amount - correctArray.length - incorrectArray.length;
 
     return (
         <View style={_styles.container}>
@@ -24,7 +18,14 @@ const ResultsScreen = () => {
     );
 }
 
-export default ResultsScreen;
+const mapStateToProps = state => {
+    return {
+        amount: state.quiz.amount,
+        answeredQuestions: state.quiz.answeredQuestions,
+    }
+};
+
+export default connect(mapStateToProps)(ResultsScreen);
 
 ResultsScreen.propTypes = {
     route: PropTypes.any,

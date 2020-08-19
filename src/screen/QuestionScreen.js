@@ -8,34 +8,34 @@ import {
 import { HeaderBackButton } from "@react-navigation/stack";
 import Question from '../component/Question';
 import Answers from '../component/Answers';
+import { connect } from 'react-redux';
 
-const QuestionScreen = ({ navigation, route }) => {
+const QuestionScreen = (props) => {
+
+    const { navigation, route, amount } = props;
 
     useLayoutEffect(() => {
         navigation.setOptions({
             headerLeft: (props) => (
                 <HeaderBackButton
                     {...props}
-                    onPress={() => { navigation.navigate('Quiz', { answeredQuestions: answeredQuestions }) }}
+                    onPress={() => { navigation.navigate('Quiz') }}
                 />)
         });
     }, [navigation]);
 
     const {
         questions,
-        answeredQuestions,
-        currentQuestion,
-        amount } = route.params;
+        currentQuestion
+    } = route.params;
 
     const onNextHandler = () => {
         if (currentQuestion >= amount - 1) {
-            navigation.navigate('Results', { amount: amount, answeredQuestions: answeredQuestions });
+            navigation.navigate('Results');
         } else {
             navigation.push('Question', {
                 questions: questions,
-                answeredQuestions: answeredQuestions,
                 currentQuestion: currentQuestion + 1,
-                amount: amount,
             });
         }
     }
@@ -43,9 +43,7 @@ const QuestionScreen = ({ navigation, route }) => {
     const onPreviousHandler = () => {
         navigation.push('Question', {
             questions: questions,
-            answeredQuestions: answeredQuestions,
             currentQuestion: currentQuestion - 1,
-            amount: amount,
         });
     }
 
@@ -69,7 +67,6 @@ const QuestionScreen = ({ navigation, route }) => {
             <View style={_styles.answersContainer}>
                 <Answers
                     questions={questions}
-                    answeredQuestions={answeredQuestions}
                     currentQuestion={currentQuestion}
                 />
             </View>
@@ -78,18 +75,23 @@ const QuestionScreen = ({ navigation, route }) => {
     );
 }
 
-export default QuestionScreen;
+const mapStateToProps = state => {
+    return {
+        amount: state.quiz.amount,
+    }
+};
+
+export default connect(mapStateToProps)(QuestionScreen);
 
 QuestionScreen.propTypes = {
     route: PropTypes.shape({
         params: PropTypes.shape({
             questions: PropTypes.array.isRequired,
-            answeredQuestions: PropTypes.array.isRequired,
             currentQuestion: PropTypes.number.isRequired,
-            amount: PropTypes.number.isRequired,
         }).isRequired,
     }),
     navigation: PropTypes.object,
+    amount: PropTypes.number.isRequired,
 };
 
 const _styles = StyleSheet.create({

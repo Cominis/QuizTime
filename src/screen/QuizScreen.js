@@ -7,13 +7,14 @@ import {
 import { requestQuestionsFromCategory, requestTokenReset } from '../api/api';
 import ProgressIndicator from '../component/ProgressIndicator';
 import QuizListItem from '../component/QuizListItem';
+import { connect } from 'react-redux';
+import * as aCreators from '../store/actions/actions';
 
 const QuizScreen = (props) => {
 
     const {
         token,
         categoryId,
-        answeredQuestions,
         settings } = props.route.params;
 
     const [questions, setQuestions] = useState({});
@@ -57,12 +58,11 @@ const QuizScreen = (props) => {
         getQuestions()
     }, [])
 
-    const toQuestionHandler = (questions, answeredQuestions, currentQuestion, amount) => {
+    //update
+    const toQuestionHandler = (questions, currentQuestion) => {
         props.navigation.navigate('Question', {
             questions: questions,
-            answeredQuestions: answeredQuestions,
-            currentQuestion: currentQuestion,
-            amount: amount,
+            currentQuestion: currentQuestion
         });
     }
 
@@ -73,8 +73,8 @@ const QuizScreen = (props) => {
             return (<QuizListItem
                 key={key}
                 id={index}
-                onPress={() => toQuestionHandler(results, answeredQuestions, index, settings.amount)}
-                isAnswered={answeredQuestions[key] !== null}
+                onPress={() => toQuestionHandler(results, index)}
+                isAnswered={props.answeredQuestions[key] !== null}
                 text={results[key].question}
             />)
         })
@@ -91,14 +91,25 @@ const QuizScreen = (props) => {
     );
 }
 
-export default QuizScreen;
+const mapStateToProps = state => {
+    return {
+        answeredQuestions: state.quiz.answeredQuestions,
+    }
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onInitAnswers: (amount) => dispatch(aCreators.initAnswers(amount)),
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(QuizScreen);
 
 QuizScreen.propTypes = {
     route: PropTypes.shape({
         params: PropTypes.shape({
             token: PropTypes.string.isRequired,
             categoryId: PropTypes.number.isRequired,
-            answeredQuestions: PropTypes.array.isRequired,
             settings: PropTypes.shape({
                 amount: PropTypes.number.isRequired,
                 difficulty: PropTypes.oneOf(['easy', 'medium', 'hard', 'any']).isRequired,

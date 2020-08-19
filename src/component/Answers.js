@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Answer from '../component/Answer';
 import shuffle from '../helper/Shuffle';
+import { connect } from 'react-redux';
+import * as aCreators from '../store/actions/actions';
 
-const Answers = ({
-    questions,
-    answeredQuestions,
-    currentQuestion,
-}) => {
+const Answers = (props) => {
+
+    const {
+        questions,
+        answeredQuestions,
+        currentQuestion,
+    } = props;
 
     const [isAnswered, setIsAnswered] = useState(answeredQuestions[currentQuestion]);
     const [answers, setAnswers] = useState([]);
@@ -31,7 +35,7 @@ const Answers = ({
 
     const onAnsweredHandler = (answer) => {
         setIsAnswered(true);
-        answeredQuestions[currentQuestion] = answer;
+        props.onInsertAnswer(currentQuestion, answer);
     }
 
     return answers.map(el =>
@@ -46,7 +50,19 @@ const Answers = ({
     )
 }
 
-export default Answers;
+const mapStateToProps = state => {
+    return {
+        answeredQuestions: state.quiz.answeredQuestions,
+    }
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onInsertAnswer: (index, value) => dispatch(aCreators.insertAnswer(index, value)),
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Answers);
 
 Answers.propTypes = {
     questions: PropTypes.array.isRequired,

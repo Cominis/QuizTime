@@ -1,0 +1,2 @@
+export const INSERT_ANSWER = 'INSERT_ANSWER';
+export const INIT_ANSWERS = 'INIT_ANSWERS';
