@@ -46,9 +46,13 @@ const MainNavigator = () => {
                 component={QuizNavigator}
                 options={({ route }) => ({
                     headerTitle: getHeaderTitle(route, 'Quiz'),
+                    headerRight: () => null,
                 })}
             />
-            <Stack.Screen name="Question" component={QuestionScreen} />
+            <Stack.Screen
+                name="Question"
+                component={QuestionScreen}
+                options={{ headerRight: () => null }} />
             <Stack.Screen
                 name="Settings"
                 component={SettingsScreen}
