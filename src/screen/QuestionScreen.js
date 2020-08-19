@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 
 const QuestionScreen = (props) => {
 
-    const { navigation, route, amount } = props;
+    const { navigation, route, questions, amount } = props;
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -25,7 +25,6 @@ const QuestionScreen = (props) => {
     }, [navigation]);
 
     const {
-        questions,
         currentQuestion
     } = route.params;
 
@@ -34,7 +33,6 @@ const QuestionScreen = (props) => {
             navigation.navigate('Results');
         } else {
             navigation.push('Question', {
-                questions: questions,
                 currentQuestion: currentQuestion + 1,
             });
         }
@@ -42,7 +40,6 @@ const QuestionScreen = (props) => {
 
     const onPreviousHandler = () => {
         navigation.push('Question', {
-            questions: questions,
             currentQuestion: currentQuestion - 1,
         });
     }
@@ -66,7 +63,6 @@ const QuestionScreen = (props) => {
             </View>
             <View style={_styles.answersContainer}>
                 <Answers
-                    questions={questions}
                     currentQuestion={currentQuestion}
                 />
             </View>
@@ -77,7 +73,8 @@ const QuestionScreen = (props) => {
 
 const mapStateToProps = state => {
     return {
-        amount: state.quiz.amount,
+        questions: state.quiz.questions,
+        amount: state.settings.amount,
     }
 };
 
@@ -86,12 +83,12 @@ export default connect(mapStateToProps)(QuestionScreen);
 QuestionScreen.propTypes = {
     route: PropTypes.shape({
         params: PropTypes.shape({
-            questions: PropTypes.array.isRequired,
             currentQuestion: PropTypes.number.isRequired,
         }).isRequired,
     }),
     navigation: PropTypes.object,
     amount: PropTypes.number.isRequired,
+    questions: PropTypes.array.isRequired,
 };
 
 const _styles = StyleSheet.create({

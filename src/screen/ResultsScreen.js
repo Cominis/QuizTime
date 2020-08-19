@@ -20,7 +20,7 @@ const ResultsScreen = (props) => {
 
 const mapStateToProps = state => {
     return {
-        amount: state.quiz.amount,
+        amount: state.settings.amount,
         answeredQuestions: state.quiz.answeredQuestions,
     }
 };
@@ -30,6 +30,8 @@ export default connect(mapStateToProps)(ResultsScreen);
 ResultsScreen.propTypes = {
     route: PropTypes.any,
     navigation: PropTypes.object,
+    amount: PropTypes.number.isRequired,
+    answeredQuestions: PropTypes.array.isRequired,
 };
 
 const _styles = StyleSheet.create({

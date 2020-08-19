@@ -15,28 +15,32 @@ const QuizScreen = (props) => {
     const {
         token,
         categoryId,
-        settings } = props.route.params;
+        amount,
+        difficulty,
+        questions } = props;
 
-    const [questions, setQuestions] = useState({});
     const [isLoading, setIsLoading] = useState(false);
 
     const getQuestions = async () => {
         setIsLoading(true);
+
         let json = await requestQuestionsFromCategory(
             token,
             categoryId,
-            settings.amount,
-            settings.difficulty,
+            amount,
+            difficulty,
         );
 
         switch (json['response_code']) {
             case (0):
-                setQuestions(json);
+                props.onUpdateQuestions(json.results);
                 break;
             case (1):
+                alert('1: Someting went wrong!');
             case (2):
+                alert('2: Someting went wrong!');
             case (3):
-                alert('Someting went wrong!');
+                alert('3: Someting went wrong!');
                 break;
             case (4):
                 json = await requestTokenReset(token)
@@ -44,9 +48,9 @@ const QuizScreen = (props) => {
                     json = await requestQuestionsFromCategory(
                         token,
                         categoryId,
-                        settings.amount,
+                        amount,
                     );
-                setQuestions(json);
+                props.onUpdateQuestions(json.results);
                 break;
             default:
 
@@ -58,24 +62,21 @@ const QuizScreen = (props) => {
         getQuestions()
     }, [])
 
-    //update
-    const toQuestionHandler = (questions, currentQuestion) => {
+    const toQuestionHandler = (currentQuestion) => {
         props.navigation.navigate('Question', {
-            questions: questions,
             currentQuestion: currentQuestion
         });
     }
 
     const renderQuestions = () => {
-        const { results = [] } = questions;
-        return Object.keys(results).map(key => {
+        return Object.keys(questions).map(key => {
             const index = parseInt(key);
             return (<QuizListItem
                 key={key}
                 id={index}
-                onPress={() => toQuestionHandler(results, index)}
+                onPress={() => toQuestionHandler(index)}
                 isAnswered={props.answeredQuestions[key] !== null}
-                text={results[key].question}
+                text={questions[key].question}
             />)
         })
     }
@@ -94,29 +95,31 @@ const QuizScreen = (props) => {
 const mapStateToProps = state => {
     return {
         answeredQuestions: state.quiz.answeredQuestions,
+        token: state.settings.token,
+        categoryId: state.quiz.categoryId,
+        amount: state.settings.amount,
+        difficulty: state.settings.difficulty,
+        questions: state.quiz.questions,
     }
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        onInitAnswers: (amount) => dispatch(aCreators.initAnswers(amount)),
+        onUpdateQuestions: (questions) => dispatch(aCreators.updateQuestions(questions)),
     }
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(QuizScreen);
 
 QuizScreen.propTypes = {
-    route: PropTypes.shape({
-        params: PropTypes.shape({
-            token: PropTypes.string.isRequired,
-            categoryId: PropTypes.number.isRequired,
-            settings: PropTypes.shape({
-                amount: PropTypes.number.isRequired,
-                difficulty: PropTypes.oneOf(['easy', 'medium', 'hard', 'any']).isRequired,
-            }).isRequired,
-        }).isRequired,
-    }),
+    route: PropTypes.any,
     navigation: PropTypes.object,
+    answeredQuestions: PropTypes.array.isRequired,
+    token: PropTypes.string.isRequired,
+    categoryId: PropTypes.number.isRequired,
+    amount: PropTypes.number.isRequired,
+    difficulty: PropTypes.oneOf(['easy', 'medium', 'hard', 'any']).isRequired,
+    questions: PropTypes.array.isRequired,
 };
 
 const _styles = StyleSheet.create({

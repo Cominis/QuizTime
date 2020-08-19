@@ -1,23 +1,33 @@
 import * as aTypes from '../actions/actionTypes';
 
 const initialState = {
+    questions: [],
+    categoryId: 20,
     answeredQuestions: [],
-    amount: 0
 };
 
 const quizReducer = (state = initialState, action) => {
     switch (action.type) {
-        case aTypes.INSERT_ANSWER:
+        case aTypes.UPDATE_ANSWER:
             const newAnsweredQuestions = state.answeredQuestions.slice();
             newAnsweredQuestions[action.index] = action.val;
             return {
                 ...state,
                 answeredQuestions: newAnsweredQuestions,
             }
+        case aTypes.UPDATE_QUESTIONS:
+            return {
+                ...state,
+                questions: action.questions,
+            }
+        case aTypes.UPDATE_CATEGORY_ID:
+            return {
+                ...state,
+                categoryId: action.categoryId,
+            }
         case aTypes.INIT_ANSWERS:
             return {
                 ...state,
-                amount: action.amount,
                 answeredQuestions: new Array(action.amount).fill(null),
             }
     }

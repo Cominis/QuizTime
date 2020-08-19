@@ -35,7 +35,7 @@ const Answers = (props) => {
 
     const onAnsweredHandler = (answer) => {
         setIsAnswered(true);
-        props.onInsertAnswer(currentQuestion, answer);
+        props.onUpdateAnswer(currentQuestion, answer);
     }
 
     return answers.map(el =>
@@ -53,12 +53,13 @@ const Answers = (props) => {
 const mapStateToProps = state => {
     return {
         answeredQuestions: state.quiz.answeredQuestions,
+        questions: state.quiz.questions,
     }
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        onInsertAnswer: (index, value) => dispatch(aCreators.insertAnswer(index, value)),
+        onUpdateAnswer: (index, value) => dispatch(aCreators.updateAnswer(index, value)),
     }
 };
 

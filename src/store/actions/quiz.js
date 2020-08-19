@@ -1,10 +1,24 @@
 import * as aTypes from './actionTypes';
 
-export const insertAnswer = (questionIndex, value) => {
+export const updateAnswer = (questionIndex, value) => {
     return {
-        type: aTypes.INSERT_ANSWER,
+        type: aTypes.UPDATE_ANSWER,
         index: questionIndex,
         val: value,
+    };
+};
+
+export const updateCategoryId = (categoryId) => {
+    return {
+        type: aTypes.UPDATE_CATEGORY_ID,
+        categoryId: categoryId,
+    };
+};
+
+export const updateQuestions = (questions) => {
+    return {
+        type: aTypes.UPDATE_QUESTIONS,
+        questions: questions,
     };
 };
 

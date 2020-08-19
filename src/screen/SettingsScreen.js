@@ -10,13 +10,15 @@ import {
 import { Picker } from '@react-native-community/picker';
 import { storeData, getData } from '../helper/Storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { connect } from 'react-redux';
+import * as aCreators from '../store/actions/actions';
 
-const SettingsScreen = ({ navigation }) => {
-    const [difficulty, setDifficulty] = useState('any')
-    const [amount, setAmount] = useState(10)
+const SettingsScreen = (props) => {
+
+    const { navigation, amount, difficulty } = props;
+
     const [isChanged, setIsChanged] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isPreloading, setIsPreloading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -58,20 +60,20 @@ const SettingsScreen = ({ navigation }) => {
 
     useLayoutEffect(() => {
         readValues()
-    }, [setDifficulty, setAmount, setIsPreloading]);
+    }, [setIsLoading]);
 
     const readValues = async () => {
         const settings = await getData('settings') || { amount: 10, difficulty: 'any' }
         if (settings !== null) {
-            setDifficulty(settings.difficulty);
-            setAmount(settings.amount);
+            props.onSetDifficulty(settings.difficulty);
+            props.onSetAmount(settings.amount);
         } else {
             alert('Something went wrong!');
         }
-        setIsPreloading(false);
+        setIsLoading(false);
     }
 
-    return isPreloading
+    return isLoading
         ? (<ActivityIndicator
             style={_styles.preloading}
             size="large"
@@ -82,11 +84,8 @@ const SettingsScreen = ({ navigation }) => {
                 selectedValue={difficulty}
                 style={_styles.picker}
                 onValueChange={(value, itemIndex) => {
-                    setDifficulty(prevState => {
-                        if (prevState !== value)
-                            setIsChanged(true);
-                        return value;
-                    });
+                    setIsChanged(true);
+                    props.onSetDifficulty(value);
                 }}
                 mode='dropdown'
             >
@@ -100,11 +99,8 @@ const SettingsScreen = ({ navigation }) => {
                 selectedValue={amount}
                 style={_styles.picker}
                 onValueChange={(value, itemIndex) => {
-                    setAmount(prevState => {
-                        if (prevState !== value)
-                            setIsChanged(true);
-                        return value;
-                    });
+                    setIsChanged(true);
+                    props.onSetAmount(value);
                 }}
                 mode='dropdown'
             >
@@ -116,11 +112,27 @@ const SettingsScreen = ({ navigation }) => {
         </View>);
 }
 
-export default SettingsScreen;
+const mapStateToProps = state => {
+    return {
+        amount: state.settings.amount,
+        difficulty: state.settings.difficulty,
+    }
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onSetAmount: (amount) => dispatch(aCreators.setAmount(amount)),
+        onSetDifficulty: (difficulty) => dispatch(aCreators.setDifficulty(difficulty)),
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SettingsScreen);
 
 SettingsScreen.propTypes = {
     route: PropTypes.any,
     navigation: PropTypes.object,
+    amount: PropTypes.number.isRequired,
+    difficulty: PropTypes.oneOf(['easy', 'medium', 'hard', 'any']).isRequired,
 };
 
 const _styles = StyleSheet.create({

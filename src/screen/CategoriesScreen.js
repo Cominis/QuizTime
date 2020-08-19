@@ -14,9 +14,9 @@ import * as aCreators from '../store/actions/actions';
 const CategoriesScreen = (props) => {
 
     const [categories, setCategories] = useState({});
-    const [token, setToken] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [settings, setSettings] = useState({});
+
+    const { token, amount, difficulty } = props;
 
     useEffect(() => {
         getInfo();
@@ -28,24 +28,20 @@ const CategoriesScreen = (props) => {
         const settingsJson = (await getData('settings')) || { amount: 10, difficulty: 'any' }
         if (categoriesJson && tokenJson['response_code'] === 0) {
             setCategories(categoriesJson);
-            setToken(tokenJson.token);
+            props.onSetToken(tokenJson.token);
         } else {
             alert('Someting went wrong!');
         }
-        setSettings(settingsJson);
+        props.onSetSettings(settingsJson.amount, settingsJson.difficulty)
         setIsLoading(false);
     }
 
     const toQuizHandler = (id) => {
-        props.onInitAnswers(settings.amount);
-        props.navigation.navigate('QuizNavigator', {
-            screen: 'Quiz',
-            params: {
-                token: token,
-                categoryId: id,
-                settings: settings,
-            },
-        });
+
+        props.onInitAnswers(amount);
+        props.onUpdateCategoryId(id);
+
+        props.navigation.navigate('QuizNavigator', { screen: 'Quiz' });
     }
 
     const renderCategories = () => {
@@ -68,17 +64,31 @@ const CategoriesScreen = (props) => {
     );
 }
 
-const mapDispatchToProps = dispatch => {
+const mapStateToProps = state => {
     return {
-        onInitAnswers: (amount) => dispatch(aCreators.initAnswers(amount)),
+        token: state.settings.token,
+        amount: state.settings.amount,
+        difficulty: state.settings.difficulty,
     }
 };
 
-export default connect(null, mapDispatchToProps)(CategoriesScreen);
+const mapDispatchToProps = dispatch => {
+    return {
+        onInitAnswers: (amount) => dispatch(aCreators.initAnswers(amount)),
+        onSetToken: (token) => dispatch(aCreators.setToken(token)),
+        onSetSettings: (amount, difficulty) => dispatch(aCreators.setSettings(amount, difficulty)),
+        onUpdateCategoryId: (categoryId) => dispatch(aCreators.updateCategoryId(categoryId)),
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CategoriesScreen);
 
 CategoriesScreen.propTypes = {
     route: PropTypes.any,
     navigation: PropTypes.object,
+    token: PropTypes.string.isRequired,
+    amount: PropTypes.number.isRequired,
+    difficulty: PropTypes.oneOf(['easy', 'medium', 'hard', 'any']).isRequired,
 };
 
 const _styles = StyleSheet.create({

@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ActivityIndicator } from "react-native";
-
+import { ActivityIndicator, StyleSheet } from "react-native";
 
 const ProgressIndicator = (props) => {
 

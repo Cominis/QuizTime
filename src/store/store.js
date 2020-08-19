@@ -1,8 +1,10 @@
 import quizReducer from './reducers/quiz';
+import settingsReducer from './reducers/settings';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 
 const rootReducer = combineReducers({
     quiz: quizReducer,
+    settings: settingsReducer,
 });
 
 const logger = store => {
