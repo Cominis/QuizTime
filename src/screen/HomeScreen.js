@@ -1,6 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { View, Image, StyleSheet, Button } from "react-native";
+import {
+    View,
+    Image,
+    StyleSheet,
+    Button
+} from "react-native";
 import Logo from '../assets/images/dummy.png'
 const HomeScreen = (props) => {
 
@@ -19,7 +24,8 @@ const HomeScreen = (props) => {
 export default HomeScreen;
 
 HomeScreen.propTypes = {
-
+    route: PropTypes.any,
+    navigation: PropTypes.object,
 };
 
 const _styles = StyleSheet.create({

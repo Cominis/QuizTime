@@ -1,8 +1,13 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
-import { View, Text, StyleSheet, Button, Pressable } from "react-native";
+import {
+    View,
+    StyleSheet,
+    Button,
+} from "react-native";
 import { HeaderBackButton } from "@react-navigation/stack";
-import shuffle from '../helper/Shuffle';
+import Question from '../component/Question';
+import Answers from '../component/Answers';
 
 const QuestionScreen = ({ navigation, route }) => {
 
@@ -22,31 +27,6 @@ const QuestionScreen = ({ navigation, route }) => {
         currentQuestion,
         amount } = route.params;
 
-    const [isAnswered, setIsAnswered] = useState(answeredQuestions[currentQuestion])
-    const [answers, setAnswers] = useState([])
-
-    useEffect(() => {
-        const answers = Object.keys(questions[currentQuestion].incorrect_answers).map((key) =>
-            ({
-                key: key,
-                title: decodeURIComponent(questions[currentQuestion].incorrect_answers[key]),
-                onPress: () => { onAnsweredHandler(false) }
-            })
-        );
-        answers.push({
-            key: 3,
-            title: decodeURIComponent(questions[currentQuestion].correct_answer),
-            onPress: () => { onAnsweredHandler(true) }
-        });
-        shuffle(answers);
-        setAnswers(answers);
-    }, [])
-
-    const onAnsweredHandler = (answer) => {
-        setIsAnswered(true);
-        answeredQuestions[currentQuestion] = answer;
-    }
-
     const onNextHandler = () => {
         if (currentQuestion >= amount - 1) {
             navigation.navigate('Results', { amount: amount, answeredQuestions: answeredQuestions });
@@ -55,7 +35,7 @@ const QuestionScreen = ({ navigation, route }) => {
                 questions: questions,
                 answeredQuestions: answeredQuestions,
                 currentQuestion: currentQuestion + 1,
-                amount: amount
+                amount: amount,
             });
         }
     }
@@ -65,7 +45,7 @@ const QuestionScreen = ({ navigation, route }) => {
             questions: questions,
             answeredQuestions: answeredQuestions,
             currentQuestion: currentQuestion - 1,
-            amount: amount
+            amount: amount,
         });
     }
 
@@ -76,26 +56,22 @@ const QuestionScreen = ({ navigation, route }) => {
                     {
                         //todo: make swipable
                     }
-                    <Button title='Previous' onPress={onPreviousHandler} disabled={currentQuestion === 0} />
-                    <Button title={currentQuestion >= amount - 1 ? 'Results' : 'Next'} onPress={onNextHandler} />
+                    <Button
+                        title='Previous'
+                        onPress={onPreviousHandler}
+                        disabled={currentQuestion === 0} />
+                    <Button
+                        title={currentQuestion >= amount - 1 ? 'Results' : 'Next'}
+                        onPress={onNextHandler} />
                 </View>
-                <Text style={_styles.question}>
-                    {decodeURIComponent(questions[currentQuestion].question)}
-                </Text>
+                <Question text={questions[currentQuestion].question} />
             </View>
             <View style={_styles.answersContainer}>
-                {answers.map(el => (
-                    <Pressable
-                        key={el.key}
-                        onPress={el.onPress}
-                        disabled={isAnswered !== null}
-                        android_ripple={{ borderless: false }}
-                        style={isAnswered !== null ? (el.key === 3 ? _styles.correct : _styles.incorrect) : _styles.normal}>
-                        <Text style={_styles.answer}>
-                            {el.title}
-                        </Text>
-                    </Pressable>
-                ))}
+                <Answers
+                    questions={questions}
+                    answeredQuestions={answeredQuestions}
+                    currentQuestion={currentQuestion}
+                />
             </View>
 
         </View>
@@ -105,7 +81,15 @@ const QuestionScreen = ({ navigation, route }) => {
 export default QuestionScreen;
 
 QuestionScreen.propTypes = {
-
+    route: PropTypes.shape({
+        params: PropTypes.shape({
+            questions: PropTypes.array.isRequired,
+            answeredQuestions: PropTypes.array.isRequired,
+            currentQuestion: PropTypes.number.isRequired,
+            amount: PropTypes.number.isRequired,
+        }).isRequired,
+    }),
+    navigation: PropTypes.object,
 };
 
 const _styles = StyleSheet.create({
@@ -114,57 +98,23 @@ const _styles = StyleSheet.create({
         flex: 2,
         justifyContent: 'center',
         alignItems: 'stretch',
-        margin: 10
+        margin: 10,
     },
     questionContainer: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
     },
     buttonsContainer: {
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center'
-    },
-    question: {
-        margin: 12,
-        fontSize: 24,
-        fontWeight: 'bold'
+        alignItems: 'center',
     },
     answersContainer: {
         flex: 1,
         flexDirection: "column",
         justifyContent: 'center',
-        alignItems: 'stretch'
+        alignItems: 'stretch',
     },
-    answer: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: 'white'
-    },
-    normal: {
-        backgroundColor: '#aaa',
-        margin: 6,
-        padding: 12,
-        paddingStart: 20,
-        paddingEnd: 20,
-        borderRadius: 32
-    },
-    correct: {
-        backgroundColor: 'green',
-        margin: 6,
-        padding: 12,
-        paddingStart: 20,
-        paddingEnd: 20,
-        borderRadius: 32
-    },
-    incorrect: {
-        backgroundColor: 'red',
-        margin: 6,
-        padding: 12,
-        paddingStart: 20,
-        paddingEnd: 20,
-        borderRadius: 32
-    }
 });

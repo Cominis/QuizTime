@@ -1,21 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { View, ScrollView, ActivityIndicator, Pressable, Text, StyleSheet } from "react-native";
+import {
+    ScrollView,
+    StyleSheet
+} from "react-native";
 import { requestQuestionsFromCategory, requestTokenReset } from '../api/api';
-import trunc from '../helper/Truncate';
+import ProgressIndicator from '../component/ProgressIndicator';
+import QuizListItem from '../component/QuizListItem';
 
 const QuizScreen = (props) => {
-    const { token, categoryId, answeredQuestions, settings } = props.route.params;
+
+    const {
+        token,
+        categoryId,
+        answeredQuestions,
+        settings } = props.route.params;
 
     const [questions, setQuestions] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+
     const getQuestions = async () => {
         setIsLoading(true);
         let json = await requestQuestionsFromCategory(
             token,
             categoryId,
             settings.amount,
-            settings.difficulty
+            settings.difficulty,
         );
 
         switch (json['response_code']) {
@@ -33,7 +43,7 @@ const QuizScreen = (props) => {
                     json = await requestQuestionsFromCategory(
                         token,
                         categoryId,
-                        settings.amount
+                        settings.amount,
                     );
                 setQuestions(json);
                 break;
@@ -48,41 +58,34 @@ const QuizScreen = (props) => {
     }, [])
 
     const toQuestionHandler = (questions, answeredQuestions, currentQuestion, amount) => {
-        console.log(`in quiz: ${amount}`);
         props.navigation.navigate('Question', {
             questions: questions,
             answeredQuestions: answeredQuestions,
             currentQuestion: currentQuestion,
-            amount: amount
+            amount: amount,
         });
     }
 
     const renderQuestions = () => {
         const { results = [] } = questions;
-        return Object.keys(results).map(key => (
-            <Pressable
+        return Object.keys(results).map(key => {
+            const index = parseInt(key);
+            return (<QuizListItem
                 key={key}
-                style={answeredQuestions[key] !== null ? _styles.viewedQuestion : _styles.normalQuestion}
-                onPress={() => toQuestionHandler(results, answeredQuestions, parseInt(key), settings.amount)}
-            >
-                <Text style={_styles.numberText}>
-                    {parseInt(key) + 1}
-                </Text>
-                <Text style={_styles.text}>
-                    {trunc(decodeURIComponent(results[key].question), 25)}
-                </Text>
-            </Pressable>
-        ))
+                id={index}
+                onPress={() => toQuestionHandler(results, answeredQuestions, index, settings.amount)}
+                isAnswered={answeredQuestions[key] !== null}
+                text={results[key].question}
+            />)
+        })
     }
+
     return (
         <ScrollView
             style={_styles.container}
             contentContainerStyle={_styles.scrollContainer}>
-            {isLoading ?
-                (<ActivityIndicator
-                    size="large"
-                    color="#00ff00"
-                />)
+            {isLoading
+                ? <ProgressIndicator />
                 : renderQuestions()}
         </ScrollView>
     );
@@ -91,43 +94,28 @@ const QuizScreen = (props) => {
 export default QuizScreen;
 
 QuizScreen.propTypes = {
-
+    route: PropTypes.shape({
+        params: PropTypes.shape({
+            token: PropTypes.string.isRequired,
+            categoryId: PropTypes.number.isRequired,
+            answeredQuestions: PropTypes.array.isRequired,
+            settings: PropTypes.shape({
+                amount: PropTypes.number.isRequired,
+                difficulty: PropTypes.oneOf(['easy', 'medium', 'hard', 'any']).isRequired,
+            }).isRequired,
+        }).isRequired,
+    }),
+    navigation: PropTypes.object,
 };
 
 const _styles = StyleSheet.create({
     container: {
-        minHeight: 100
+        minHeight: 100,
     },
     scrollContainer: {
         flexGrow: 1,
         flexDirection: 'column',
         justifyContent: 'center',
-        alignItems: 'stretch'
+        alignItems: 'stretch',
     },
-    normalQuestion: {
-        padding: 5,
-        paddingEnd: 20,
-        flexDirection: 'row'
-    },
-    viewedQuestion: {
-        backgroundColor: '#ccc',
-        padding: 5,
-        paddingEnd: 20,
-        flexDirection: 'row'
-    },
-    text: {
-        fontSize: 20,
-        textAlignVertical: 'center'
-    },
-    numberText: {
-        minWidth: 40,
-        color: 'black',
-        backgroundColor: '#ccc',
-        fontSize: 20,
-        textAlign: 'center',
-        textAlignVertical: 'center',
-        padding: 5,
-        marginEnd: 5,
-        borderRadius: 20
-    }
 });

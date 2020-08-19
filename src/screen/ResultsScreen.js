@@ -27,7 +27,8 @@ const ResultsScreen = () => {
 export default ResultsScreen;
 
 ResultsScreen.propTypes = {
-
+    route: PropTypes.any,
+    navigation: PropTypes.object,
 };
 
 const _styles = StyleSheet.create({

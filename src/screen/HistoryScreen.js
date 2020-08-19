@@ -9,7 +9,8 @@ const HistoryScreen = () => {
 export default HistoryScreen;
 
 HistoryScreen.propTypes = {
-
+    route: PropTypes.any,
+    navigation: PropTypes.object,
 };
 
 const _styles = StyleSheet.create({

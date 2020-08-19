@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
     View,
@@ -119,7 +119,8 @@ const SettingsScreen = ({ navigation }) => {
 export default SettingsScreen;
 
 SettingsScreen.propTypes = {
-
+    route: PropTypes.any,
+    navigation: PropTypes.object,
 };
 
 const _styles = StyleSheet.create({
