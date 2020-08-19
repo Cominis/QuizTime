@@ -8,10 +8,11 @@ export const updateAnswer = (questionIndex, value) => {
     };
 };
 
-export const updateCategoryId = (categoryId) => {
+export const updateCategoryId = (categoryId, categoryName) => {
     return {
         type: aTypes.UPDATE_CATEGORY_ID,
         categoryId: categoryId,
+        categoryName: categoryName,
     };
 };
 

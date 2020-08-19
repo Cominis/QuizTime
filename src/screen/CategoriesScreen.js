@@ -36,10 +36,10 @@ const CategoriesScreen = (props) => {
         setIsLoading(false);
     }
 
-    const toQuizHandler = (id) => {
+    const toQuizHandler = (id, name) => {
 
         props.onInitAnswers(amount);
-        props.onUpdateCategoryId(id);
+        props.onUpdateCategoryId(id, name);
 
         props.navigation.navigate('QuizNavigator', { screen: 'Quiz' });
     }
@@ -49,7 +49,7 @@ const CategoriesScreen = (props) => {
         return trivia_categories.map(el =>
             (<Category
                 key={el['id']}
-                onPress={() => toQuizHandler(el['id'])}
+                onPress={() => toQuizHandler(el['id'], el['name'])}
                 text={el['name']}
             />)
         )
@@ -77,7 +77,7 @@ const mapDispatchToProps = dispatch => {
         onInitAnswers: (amount) => dispatch(aCreators.initAnswers(amount)),
         onSetToken: (token) => dispatch(aCreators.setToken(token)),
         onSetSettings: (amount, difficulty) => dispatch(aCreators.setSettings(amount, difficulty)),
-        onUpdateCategoryId: (categoryId) => dispatch(aCreators.updateCategoryId(categoryId)),
+        onUpdateCategoryId: (categoryId, categoryName) => dispatch(aCreators.updateCategoryId(categoryId, categoryName)),
     }
 };
 

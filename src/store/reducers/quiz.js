@@ -3,6 +3,7 @@ import * as aTypes from '../actions/actionTypes';
 const initialState = {
     questions: [],
     categoryId: 20,
+    categoryName: '',
     answeredQuestions: [],
 };
 
@@ -24,6 +25,7 @@ const quizReducer = (state = initialState, action) => {
             return {
                 ...state,
                 categoryId: action.categoryId,
+                categoryName: action.categoryName,
             }
         case aTypes.INIT_ANSWERS:
             return {
