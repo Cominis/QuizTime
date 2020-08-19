@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import QuizContext from '../component/QuizContext'
 
 import QuizScreen from '../screen/QuizScreen';
 import ResultsScreen from '../screen/ResultsScreen';
@@ -8,7 +9,7 @@ import ResultsScreen from '../screen/ResultsScreen';
 const QuizTab = createBottomTabNavigator();
 const QuizNavigator = ({ route }) => {
     return (
-        <NetworkContext.Provider value={route.params}>
+        <QuizContext.Provider value={route.params}>
             <QuizTab.Navigator>
                 <QuizTab.Screen
                     name="Quiz"
@@ -35,7 +36,7 @@ const QuizNavigator = ({ route }) => {
                     }}
                 />
             </QuizTab.Navigator>
-        </NetworkContext.Provider>
+        </QuizContext.Provider>
     );
 }
 
