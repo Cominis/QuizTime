@@ -47,7 +47,7 @@ const _styles = StyleSheet.create({
         borderRadius: 32
     },
     correct: {
-        backgroundColor: 'green',
+        backgroundColor: 'lightgreen',
         margin: 6,
         padding: 12,
         paddingStart: 20,

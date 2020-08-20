@@ -30,14 +30,19 @@ const ResultsScreen = (props) => {
 
     const saveResultHandler = async () => {
         setIsLoading(true)
-        const oldHistory = await getData('history') || {};
+        const history = await getData('history') || [];
         const date = getCurrentDate();
-        const results = props.questions.map((el, index) => ({
-            ...el, answered: props.answeredQuestions[index],
-        }));
 
-        const newHistory = { [date]: results, ...oldHistory };
-        const isSuccess = await storeData('history', newHistory);
+        const results = {
+            correct: correctArray.length,
+            incorrect: incorrectArray.length,
+            category: props.categoryName,
+            date: date,
+        };
+
+        history.unshift(results);
+
+        const isSuccess = await storeData('history', history);
         setIsLoading(false);
         isSuccess ? props.navigation.navigate('Home') : alert('Something went wrong!');
     }
@@ -60,7 +65,7 @@ const ResultsScreen = (props) => {
                     From
                 </Text>
                 <Text style={_styles.bold}>
-                    Category {props.categoryName}
+                    {props.categoryName}
                 </Text>
             </View>
             <View style={[_styles.horizontal, _styles.three]}>
