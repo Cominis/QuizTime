@@ -4,12 +4,31 @@ import {
     View,
     StyleSheet,
     Text,
-    Pressable
+    Pressable,
+    ScrollView,
 } from "react-native";
 import { getData } from '../helper/Storage';
 import Accordion from 'react-native-collapsible/Accordion';
-import ProgressIndicator from '../component/ProgressIndicator';
 import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { Placeholder, PlaceholderLine, ShineOverlay } from 'rn-placeholder';
+
+const LoadingPlaceholder = () => {
+    return (
+        <React.Fragment>
+            {Array.apply(null, Array(10)).map((_, index) => (
+                <Placeholder
+                    key={index}
+                    style={_styles.icon}
+                    Animation={ShineOverlay}
+                >
+                    <PlaceholderLine width={80} />
+                    <PlaceholderLine width={40} />
+                </Placeholder>
+            ))}
+        </React.Fragment>
+    );
+};
+
 
 const HistoryScreen = (props) => {
 
@@ -69,9 +88,9 @@ const HistoryScreen = (props) => {
 
 
     return (
-        <View styles={_styles.container}>
+        <ScrollView styles={_styles.container}>
             {isLoading
-                ? <ProgressIndicator />
+                ? <LoadingPlaceholder />
                 : <Accordion
                     sections={history}
                     activeSections={activeSections}
@@ -81,7 +100,7 @@ const HistoryScreen = (props) => {
                     duration={400}
                     touchableComponent={Pressable}
                 />}
-        </View>);
+        </ScrollView>);
 
 }
 
@@ -95,6 +114,7 @@ HistoryScreen.propTypes = {
 const _styles = StyleSheet.create({
     container: {
         flexGrow: 1,
+        backgroundColor: 'white',
     },
     header: {
         backgroundColor: '#fff',
@@ -129,5 +149,8 @@ const _styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginLeft: 20,
+    },
+    icon: {
+        margin: 10,
     },
 });
