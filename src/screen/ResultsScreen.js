@@ -117,7 +117,9 @@ const _styles = StyleSheet.create({
     container: {
         flex: 9,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        paddingLeft: 20,
+        paddingRight: 20,
     },
     bold: {
         fontWeight: 'bold',
