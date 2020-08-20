@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     View,
@@ -9,10 +9,20 @@ import { HeaderBackButton } from "@react-navigation/stack";
 import Question from '../component/Question';
 import Answers from '../component/Answers';
 import { connect } from 'react-redux';
+import
+GestureRecognizer,
+{ swipeDirections, }
+    from 'react-native-swipe-gestures';
 
 const QuestionScreen = (props) => {
 
     const { navigation, route, questions, amount } = props;
+
+    const {
+        currentQuestion
+    } = route.params;
+
+    const [currentIndex, setCurrentIndex] = useState(currentQuestion);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -24,49 +34,44 @@ const QuestionScreen = (props) => {
         });
     }, [navigation]);
 
-    const {
-        currentQuestion
-    } = route.params;
-
     const onNextHandler = () => {
-        if (currentQuestion >= amount - 1) {
+        if (currentIndex >= amount - 1) {
             navigation.navigate('Results');
         } else {
-            navigation.push('Question', {
-                currentQuestion: currentQuestion + 1,
-            });
+            setCurrentIndex(currentIndex + 1);
+            // navigation.push('Question', {
+            //     currentQuestion: currentQuestion + 1,
+            // });
         }
     }
 
     const onPreviousHandler = () => {
-        navigation.push('Question', {
-            currentQuestion: currentQuestion - 1,
-        });
+        setCurrentIndex(currentIndex - 1);
+        // navigation.push('Question', {
+        //     currentQuestion: currentQuestion - 1,
+        // });
     }
 
     return (
         <View style={_styles.container}>
             <View style={_styles.questionContainer}>
-                <View style={_styles.buttonsContainer}>
-                    {
-                        //todo: make swipable
-                    }
-                    <Button
-                        title='Previous'
-                        onPress={onPreviousHandler}
-                        disabled={currentQuestion === 0} />
-                    <Button
-                        title={currentQuestion >= amount - 1 ? 'Results' : 'Next'}
-                        onPress={onNextHandler} />
-                </View>
-                <Question text={questions[currentQuestion].question} />
+                <Question text={questions[currentIndex].question} />
+            </View>
+            <View style={_styles.buttonsContainer}>
+                {
+                    //todo: make swipable
+                }
+                <Button
+                    title='Previous'
+                    onPress={onPreviousHandler}
+                    disabled={currentIndex === 0} />
+                <Button
+                    title={currentIndex >= amount - 1 ? 'Results' : 'Next'}
+                    onPress={onNextHandler} />
             </View>
             <View style={_styles.answersContainer}>
-                <Answers
-                    currentQuestion={currentQuestion}
-                />
+                <Answers currentQuestion={currentIndex} />
             </View>
-
         </View>
     );
 }
@@ -94,24 +99,25 @@ QuestionScreen.propTypes = {
 const _styles = StyleSheet.create({
 
     container: {
-        flex: 2,
+        flex: 9,
         justifyContent: 'center',
         alignItems: 'stretch',
         margin: 10,
     },
     questionContainer: {
-        flex: 1,
+        flex: 4,
         justifyContent: 'center',
         alignItems: 'flex-start',
     },
     buttonsContainer: {
+        flex: 1,
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
     },
     answersContainer: {
-        flex: 1,
+        flex: 4,
         flexDirection: "column",
         justifyContent: 'center',
         alignItems: 'stretch',

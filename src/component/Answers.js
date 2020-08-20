@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import Answer from '../component/Answer';
 import shuffle from '../helper/Shuffle';
@@ -16,22 +16,25 @@ const Answers = (props) => {
     const [isAnswered, setIsAnswered] = useState(answeredQuestions[currentQuestion]);
     const [answers, setAnswers] = useState([]);
 
-    useEffect(() => {
-        const answers = Object.keys(questions[currentQuestion].incorrect_answers).map((key) =>
+    useLayoutEffect(() => {
+        const answersArray = Object.keys(questions[currentQuestion].incorrect_answers).map((key) =>
             ({
                 key: key,
                 text: decodeURIComponent(questions[currentQuestion].incorrect_answers[key]),
                 onPress: () => { onAnsweredHandler(false) },
             })
         );
-        answers.push({
+        answersArray.push({
             key: 3,
             text: decodeURIComponent(questions[currentQuestion].correct_answer),
             onPress: () => { onAnsweredHandler(true) },
         });
-        shuffle(answers);
-        setAnswers(answers);
-    }, [setAnswers]);
+        shuffle(answersArray);
+        setAnswers(answersArray);
+        setIsAnswered(answeredQuestions[currentQuestion]);
+
+    }, [setAnswers, currentQuestion, setIsAnswered]);
+
 
     const onAnsweredHandler = (answer) => {
         setIsAnswered(true);

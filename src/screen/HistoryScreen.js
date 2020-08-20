@@ -6,6 +6,7 @@ import {
     Text,
     Pressable,
     ScrollView,
+    Dimensions
 } from "react-native";
 import { getData } from '../helper/Storage';
 import Accordion from 'react-native-collapsible/Accordion';
@@ -33,22 +34,30 @@ const LoadingPlaceholder = () => {
 const HistoryScreen = (props) => {
 
     const [isLoading, setIsLoading] = useState(true);
+    const [isEmpty, setIsEmpty] = useState(true);
     const [history, setHistory] = useState([]);
     const [activeSections, setActiveSections] = useState([]);
 
     const { navigation } = props;
+
+    let emptyHistory = null;
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', async () => {
             setIsLoading(true);
             const history = await getData('history') || [];
             setHistory(history);
+
+            if (!history.length)
+                setIsEmpty(true);
+            else
+                setIsEmpty(false);
+
             setIsLoading(false);
         });
 
         return unsubscribe;
     }, [navigation]);
-
 
     const _renderHeader = section => {
         return (
@@ -87,11 +96,15 @@ const HistoryScreen = (props) => {
     };
 
 
-    return (
-        <ScrollView styles={_styles.container}>
-            {isLoading
-                ? <LoadingPlaceholder />
-                : <Accordion
+    return (<ScrollView contentContainerStyle={isEmpty ? _styles.containerCenter : _styles.container}>
+        {isLoading
+            ? <LoadingPlaceholder />
+            : isEmpty
+                ? (<View style={_styles.center}>
+                    <AwesomeIcon name='bed' size={50} color='black' />
+                    <Text>History is empty!</Text>
+                </View>)
+                : (<Accordion
                     sections={history}
                     activeSections={activeSections}
                     renderHeader={_renderHeader}
@@ -99,8 +112,9 @@ const HistoryScreen = (props) => {
                     onChange={_updateSections}
                     duration={400}
                     touchableComponent={Pressable}
-                />}
-        </ScrollView>);
+                />)}
+
+    </ScrollView>);
 
 }
 
@@ -114,7 +128,20 @@ HistoryScreen.propTypes = {
 const _styles = StyleSheet.create({
     container: {
         flexGrow: 1,
-        backgroundColor: 'white',
+        flexDirection: 'column',
+    },
+    containerCenter: {
+        flexGrow: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    center: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+        textAlign: 'center',
+        textAlignVertical: 'center',
     },
     header: {
         backgroundColor: '#fff',
@@ -151,6 +178,6 @@ const _styles = StyleSheet.create({
         marginLeft: 20,
     },
     icon: {
-        margin: 10,
+        padding: 15,
     },
 });
