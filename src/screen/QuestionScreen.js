@@ -4,6 +4,7 @@ import {
     View,
     StyleSheet,
     Button,
+    Pressable,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/stack";
 import Question from '../component/Question';
@@ -12,7 +13,8 @@ import { connect } from 'react-redux';
 import
 GestureRecognizer,
 { swipeDirections, }
-    from 'react-native-swipe-gestures';
+    from 'react-native-swipe-gestures'; //uninstall
+import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 const QuestionScreen = (props) => {
 
@@ -39,17 +41,16 @@ const QuestionScreen = (props) => {
             navigation.navigate('Results');
         } else {
             setCurrentIndex(currentIndex + 1);
-            // navigation.push('Question', {
-            //     currentQuestion: currentQuestion + 1,
-            // });
         }
     }
 
     const onPreviousHandler = () => {
-        setCurrentIndex(currentIndex - 1);
-        // navigation.push('Question', {
-        //     currentQuestion: currentQuestion - 1,
-        // });
+        if (currentIndex <= 0) {
+            navigation.navigate('Quiz');
+        } else {
+            setCurrentIndex(currentIndex - 1);
+        }
+
     }
 
     return (
@@ -58,16 +59,38 @@ const QuestionScreen = (props) => {
                 <Question text={questions[currentIndex].question} />
             </View>
             <View style={_styles.buttonsContainer}>
-                {
-                    //todo: make swipable
-                }
-                <Button
-                    title='Previous'
+                <Pressable
                     onPress={onPreviousHandler}
-                    disabled={currentIndex === 0} />
-                <Button
-                    title={currentIndex >= amount - 1 ? 'Results' : 'Next'}
-                    onPress={onNextHandler} />
+                    android_ripple={{
+                        borderless: true,
+                    }}
+                    style={_styles.button}
+                >
+                    {({ pressed }) => (
+                        <AwesomeIcon
+                            name='chevron-left'
+                            size={pressed ? 55 : 50}
+                            color={pressed ? 'blue' : 'black'}
+                        />
+                    )}
+
+                </Pressable>
+                <Pressable
+                    onPress={onNextHandler}
+                    android_ripple={{
+                        borderless: true,
+                    }}
+                    style={_styles.button}
+                >
+                    {({ pressed }) => (
+                        <AwesomeIcon
+                            name='chevron-right'
+                            size={pressed ? 55 : 50}
+                            color={pressed ? 'blue' : 'black'}
+                        />
+                    )}
+                </Pressable>
+
             </View>
             <View style={_styles.answersContainer}>
                 <Answers currentQuestion={currentIndex} />
@@ -97,7 +120,6 @@ QuestionScreen.propTypes = {
 };
 
 const _styles = StyleSheet.create({
-
     container: {
         flex: 9,
         justifyContent: 'center',
@@ -115,6 +137,12 @@ const _styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        paddingLeft: 15,
+        paddingRight: 15,
+    },
+    button: {
+        minWidth: 50,
+        minHeight: 50,
     },
     answersContainer: {
         flex: 4,

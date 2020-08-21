@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
     View,
@@ -42,7 +42,7 @@ const HistoryScreen = (props) => {
 
     let emptyHistory = null;
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const unsubscribe = navigation.addListener('focus', async () => {
             setIsLoading(true);
             const history = await getData('history') || [];

@@ -6,7 +6,7 @@ import {
     StyleSheet,
     Button
 } from "react-native";
-import Logo from '../assets/images/dummy.png'
+import Logo from '../assets/images/logo.png'
 const HomeScreen = (props) => {
 
     const onStartHandler = () => {
